@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>Singapore Incident Monitoring System</h1>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Real-time Incident Map</h5>
+                    <p class="card-text">View current incidents across Singapore with severity indicators.</p>
+                    <a href="{% url 'realtime_map' %}" class="btn btn-primary">View Map</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Incident Prediction Heatmap</h5>
+                    <p class="card-text">View areas with high predicted incident likelihood.</p>
+                    <a href="{% url 'prediction_heatmap' %}" class="btn btn-primary">View Heatmap</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
