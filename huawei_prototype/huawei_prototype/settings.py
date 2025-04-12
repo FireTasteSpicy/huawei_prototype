@@ -41,6 +41,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'dashboard',
     'geomap',
+    'authentication',
+    'archive',
+    'cameras',
+    'notifications',
 ]
 
 MIDDLEWARE = [
