@@ -1,9 +1,15 @@
-"""
-Temporary models for the Huawei prototype so I can start coding.
-Jun Hong pls update to your requirements hahaha
-"""
-
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
+
+# User Authentication
+class User(models.Model):
+    user_id = models.AutoField(primary_key=True)
+    username = models.CharField(max_length=150, unique=True)
+    password = models.CharField(max_length=128)
+    email = models.EmailField(unique=True)
+    
+    def __str__(self):
+        return self.username
 
 # Camera Model
 class Camera(models.Model):
@@ -21,7 +27,10 @@ class Incident(models.Model):
     incident_id = models.AutoField(primary_key=True)
     incident_type = models.CharField(max_length=100)
     timestamp = models.DateTimeField(auto_now_add=True)
-    severity = models.IntegerField(help_text='Scale from 0-10')  # 0-10 scale
+    severity = models.IntegerField(
+        help_text='Scale from 0-10',
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+    )  # 0-10 scale
     camera = models.ForeignKey(Camera, on_delete=models.CASCADE, related_name='incidents')
     
     def __str__(self):
