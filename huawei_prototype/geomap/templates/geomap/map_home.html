@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>Singapore Incident Monitoring System</h1>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Real-time Incident Map</h5>
+                    <p class="card-text">View current incidents across Singapore with severity indicators.</p>
+                    <a href="{% url 'incident_map' %}" class="btn btn-primary">View Incident Map</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Accident Probability Heatmap</h5>
+                    <p class="card-text">View a heatmap of accident probability scores across Singapore.</p>
+                    <a href="{% url 'probability_map' %}" class="btn btn-primary">View Accident Probability</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Camera Map</h5>
+                    <p class="card-text">View a map of the locations of cameras across Singapore.</p>
+                    <a href="{% url 'camera_map' %}" class="btn btn-primary">View Camera Map</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Weather Map</h5>
+                    <p class="card-text">View a map of the weather across Singapore.</p>
+                    <a href="{% url 'weather_map' %}" class="btn btn-primary">View Weather Heatmap</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -27,6 +27,7 @@ pip install -r requirements.txt
 4. Run database migrations:
 ```bash
 cd huawei_prototype
+python manage.py makemigrations
 python manage.py migrate
 ```
 

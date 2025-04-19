@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>List of Available Cameras</h1>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Search Cameras</h5>
+                    <form method="get" action="" class="form-inline">
+                        <div class="input-group w-100">
+                            <input type="text" name="search" class="form-control" placeholder="Search by name or road..." value="{{ search_query }}">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-primary" type="submit">Search</button>
+                                {% if search_query %}
+                                <a href="{% url 'cameras' %}" class="btn btn-outline-secondary">Clear</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Camera Name</th>
+                                    <th>Location</th>
+                                    <th>Road Name</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if cameras %}
+                                    {% for camera in cameras %}
+                                        <tr>
+                                            <td>{{ camera.camera_name }}</td>
+                                            <td>{{ camera.location }}</td>
+                                            <td>{{ camera.road_name }}</td>
+                                            <td>
+                                                <a href="{% url 'camera_feed' camera.camera_id %}" class="btn btn-sm btn-primary">
+                                                    <i class="fa fa-video-camera"></i> View Live Feed
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">No cameras found</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if cameras.has_other_pages %}
+    <div class="row mt-3">
+        <div class="col-12">
+            <nav aria-label="Camera pagination">
+                <ul class="pagination justify-content-center">
+                    {% if cameras.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% if search_query %}search={{ search_query }}&{% endif %}page=1">&laquo; First</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?{% if search_query %}search={{ search_query }}&{% endif %}page={{ cameras.previous_page_number }}">Previous</a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in cameras.paginator.page_range %}
+                        {% if cameras.number == num %}
+                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?{% if search_query %}search={{ search_query }}&{% endif %}page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if cameras.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% if search_query %}search={{ search_query }}&{% endif %}page={{ cameras.next_page_number }}">Next</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?{% if search_query %}search={{ search_query }}&{% endif %}page={{ cameras.paginator.num_pages }}">Last &raquo;</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

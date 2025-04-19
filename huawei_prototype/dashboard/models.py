@@ -24,13 +24,21 @@ class Camera(models.Model):
 
 # Incident Model
 class Incident(models.Model):
+    SEVERITY_CHOICES = [
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High'),
+    ]
+    
     incident_id = models.AutoField(primary_key=True)
     incident_type = models.CharField(max_length=100)
     timestamp = models.DateTimeField(auto_now_add=True)
-    severity = models.IntegerField(
-        help_text='Scale from 0-10',
-        validators=[MinValueValidator(0), MaxValueValidator(10)],
-    )  # 0-10 scale
+    severity = models.CharField(
+        max_length=10,
+        choices=SEVERITY_CHOICES,
+        default='medium',
+        help_text='Incident severity level'
+    )
     camera = models.ForeignKey(Camera, on_delete=models.CASCADE, related_name='incidents')
     
     def __str__(self):
@@ -64,8 +72,8 @@ class KPISnapshot(models.Model):
     total_incidents = models.IntegerField(default=0)
     average_response_time = models.DurationField(null=True, blank=True)
     total_infractions = models.IntegerField(default=0)
-    moderate_risk_count = models.IntegerField(default=0)
-    high_risk_count = models.IntegerField(default=0)
+    moderate_severity_count = models.IntegerField(default=0)
+    high_severity_count = models.IntegerField(default=0)
     camera = models.ForeignKey(Camera, on_delete=models.CASCADE, related_name='kpi_snapshots')
     
     def __str__(self):
@@ -89,13 +97,13 @@ class Notification(models.Model):
     def __str__(self):
         return f"{self.category}: {self.message[:30]}..."
 
-# Accident Prediction Score Model
-class AccidentPredictionScore(models.Model):
-    accident_prediction_score_id = models.AutoField(primary_key=True)
+# Accident Probability Score Model
+class AccidentProbabilityScore(models.Model):
+    accident_prob_score_id = models.AutoField(primary_key=True)
     area_geometry = models.TextField()  # Consider using GeoDjango for proper geometry support
-    risk_score = models.FloatField()
+    accident_prob_score = models.FloatField()
     timestamp = models.DateTimeField(auto_now_add=True)
-    camera = models.ForeignKey(Camera, on_delete=models.CASCADE, related_name='accident_predictions')
+    camera = models.ForeignKey(Camera, on_delete=models.CASCADE, related_name='accident_probabilitys')
     
     def __str__(self):
-        return f"Risk score: {self.risk_score} at {self.timestamp}"
+        return f"Risk score: {self.accident_prob_score} at {self.timestamp}"

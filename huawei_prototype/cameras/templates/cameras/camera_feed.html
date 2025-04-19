@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>{{ camera.camera_name }}</h1>
+    
+    <div class="card">
+        <div class="card-body p-3">
+            <a href="{% url 'cameras' %}" class="btn btn-secondary">
+                &lt;- Back to Camera List
+            </a>
+            
+            <div class="row mt-3">
+                <div class="col-md-8">
+                    <!-- Video feed display -->
+                    <div style="background-color: #d3d3d3; height: 350px; display: flex; align-items: center; justify-content: center;">
+                        {% if camera.feed_url %}
+                        <video id="cameraFeed" style="width: 100%; height: 100%; object-fit: contain;" autoplay>
+                            <source src="{{ camera.feed_url }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        {% else %}
+                        <h3 class="text-secondary">Video</h3>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Camera details below video -->
+                    <div class="card mt-3">
+                        <div class="card-body text-center">
+                            <div><strong>Camera Name:</strong> {{ camera.camera_name }}</div>
+                            <div><strong>Location:</strong> {{ camera.location }}</div>
+                            <div><strong>Road Name:</strong> {{ camera.road_name }}</div>
+                            <div><strong>Timestamp:</strong> {{ timestamp|date:"Y-m-d H:i:s" }}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <!-- Live Stats -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5 class="m-0">Live Stats</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <div><strong>Risk Category:</strong></div>
+                            <div>> {{ accident_prob_score }} - {{ risk_level }} Risk</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Weather -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="m-0">Weather</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <div><strong>Temperature:</strong> {{ weather.temperature }}°C</div>
+                            <div><strong>Conditions:</strong> {{ weather.conditions }}</div>
+                            <div><strong>Last Updated:</strong> {{ weather.updated|date:"H:i" }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Handle video error fallback
+document.getElementById('cameraFeed').addEventListener('error', function() {
+    this.style.display = 'none';
+    const container = this.parentElement;
+    const fallback = document.createElement('h3');
+    fallback.className = 'text-secondary';
+    fallback.textContent = 'Video';
+    container.appendChild(fallback);
+});
+</script>
+{% endblock %}
