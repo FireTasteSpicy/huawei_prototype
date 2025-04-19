@@ -1,5 +1,114 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <p>Notifications Placeholder</p>
+<div class="container">
+    <h1>Notifications Dashboard</h1>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Filter Notifications</h5>
+                    <div class="btn-group" role="group">
+                        {% for status in status_types %}
+                            <a href="?status={{ status }}" class="btn btn-outline-primary {% if status == selected_status %}active{% endif %}">
+                                {{ status|title }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Notification</th>
+                                    <th>Message</th>
+                                    <th>Category</th>
+                                    <th>Timestamp</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if notifications %}
+                                    {% for notification in notifications %}
+                                        <tr class="{% if not notification.read_status %}table-warning{% endif %}">
+                                            <td>#{{ notification.notification_id }}</td>
+                                            <td>{{ notification.message }}</td>
+                                            <td>
+                                                {% if notification.category == 'threshold_triggered' %}
+                                                    <span class="badge bg-danger">Threshold Triggered</span>
+                                                {% elif notification.category == 'alert' %}
+                                                    <span class="badge bg-warning">Alert</span>
+                                                {% else %}
+                                                    <span class="badge bg-info">Message</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ notification.timestamp|date:"Y-m-d H:i" }}</td>
+                                            <td>
+                                                {% if notification.read_status %}
+                                                    <a href="?mark_unread={{ notification.notification_id }}&status={{ selected_status }}" class="btn btn-sm btn-outline-secondary">Mark Unread</a>
+                                                {% else %}
+                                                    <a href="?mark_read={{ notification.notification_id }}&status={{ selected_status }}" class="btn btn-sm btn-outline-primary">Mark Read</a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center">No notifications found</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if notifications.has_other_pages %}
+    <div class="row mt-3">
+        <div class="col-12">
+            <nav aria-label="Notification pagination">
+                <ul class="pagination justify-content-center">
+                    {% if notifications.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?status={{ selected_status }}&page=1">&laquo; First</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?status={{ selected_status }}&page={{ notifications.previous_page_number }}">Previous</a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in notifications.paginator.page_range %}
+                        {% if notifications.number == num %}
+                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?status={{ selected_status }}&page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if notifications.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?status={{ selected_status }}&page={{ notifications.next_page_number }}">Next</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?status={{ selected_status }}&page={{ notifications.paginator.num_pages }}">Last &raquo;</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% endif %}
+</div>
 {% endblock %}
