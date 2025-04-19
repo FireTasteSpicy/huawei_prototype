@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>{{ title }}</h1>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <p class="mb-3">{{ description }}</p>
+                    <h5>Weather Legend</h5>
+                    <div class="d-flex flex-wrap">
+                        <div class="me-3 mb-2">
+                            <i class="fa fa-sun-o text-warning"></i> Sunny/Clear
+                        </div>
+                        <div class="me-3 mb-2">
+                            <i class="fa fa-cloud text-secondary"></i> Cloudy
+                        </div>
+                        <div class="me-3 mb-2">
+                            <i class="fa fa-umbrella text-primary"></i> Rain
+                        </div>
+                        <div class="me-3 mb-2">
+                            <i class="fa fa-bolt text-purple"></i> Thunderstorm
+                        </div>
+                        <div class="me-3 mb-2">
+                            <i class="fa fa-low-vision text-secondary"></i> Hazy/Foggy
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Constrain the map and ensure content flows properly -->
+    <div class="map-container" style="height: 600px; position: relative; overflow: hidden;">
+        <div style="width: 100%; height: 100%;">
+            {{ map_html|safe }}
+        </div>
+    </div>
+    
+    <!-- Fixed button positioning -->
+    <div class="mt-4 mb-5" style="position: relative; clear: both;">
+        <a href="{% url 'geomap' %}" class="btn btn-secondary">Back to Map Home Page</a>
+    </div>
+</div>
+{% endblock %}

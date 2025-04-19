@@ -20,11 +20,11 @@ from django.views.generic import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', RedirectView.as_view(url='geomap/', permanent=True)),
+    path('', RedirectView.as_view(url='/dashboard/')),    
     path('geomap/', include('geomap.urls')),
     path('archive/', include('archive.urls')),
     path('dashboard/', include('dashboard.urls')),
     path('cameras/', include('cameras.urls')),
-    path('auth/', include('authentication.urls')),
+    # path('auth/', include('authentication.urls')),
     path('notifications/', include('notifications.urls')),
 ]
