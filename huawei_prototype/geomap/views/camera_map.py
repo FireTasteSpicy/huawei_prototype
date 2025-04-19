@@ -31,7 +31,7 @@ def camera_map(request):
                 <strong>Location:</strong> {camera.location}<br>
                 <strong>Road:</strong> {camera.road_name}<br>
                 <div class="mt-2">
-                    <a href="{camera.feed_url}" target="_blank" class="btn btn-primary btn-sm" style="color: white !important;">
+                    <a href="/cameras/view/{camera.camera_id}/" target="_blank" class="btn btn-primary btn-sm" style="color: white !important;">
                         <i class="fa fa-video-camera"></i> View Feed
                     </a>
                 </div>
@@ -52,26 +52,19 @@ def camera_map(request):
         # Demo data
         demo_cameras = [
             {
-                "id": 1,
-                "name": "ECP-01",
+                "camera_id": 1,
+                "camera_name": "ECP-01",
                 "location": "1.3099,103.9053",
-                "road": "Duku Road",
-                "feed": "https://example.com/feed/ecp01"
+                "road_name": "East Coast Parkway",
+                "feed_url": "https://example.com/feed/ecp01.mp4"  # Use video URLs that end with extensions
             },
             {
-                "id": 2,
-                "name": "PIE-04",
-                "location": "1.3347,103.7775", 
-                "road": "Clementi Road",
-                "feed": "https://example.com/feed/pie04"
+                "camera_id": 2,
+                "camera_name": "PIE-04",
+                "location": "1.3347,103.7775",
+                "road_name": "Pan Island Expressway",
+                "feed_url": "https://example.com/feed/pie04.mp4"
             },
-            {
-                "id": 3,
-                "name": "CTE-09",
-                "location": "1.3545,103.8390",
-                "road": "Jalan Pintau",
-                "feed": "https://example.com/feed/cte09"
-            }
         ]
         
         for camera in demo_cameras:
@@ -85,14 +78,14 @@ def camera_map(request):
                     <strong>Location:</strong> {camera["location"]}<br>
                     <strong>Road:</strong> {camera["road"]}<br>
                     <div class="mt-2">
-                        <a href="{camera["feed"]}" target="_blank" class="btn btn-primary btn-sm" style="color: white !important;">
+                        <a href="/cameras/view/{camera["id"]}/" target="_blank" class="btn btn-primary btn-sm" style="color: white !important;">
                             <i class="fa fa-video-camera"></i> View Feed
                         </a>
                     </div>
                     <div><em>(Demo data)</em></div>
                 </div>
                 """
-                
+                                
                 folium.Marker(
                     location=[lat, lng],
                     popup=folium.Popup(popup_content, max_width=300),
