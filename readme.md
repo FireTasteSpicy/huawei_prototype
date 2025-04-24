@@ -42,3 +42,21 @@ python manage.py runserver
 ```
 
 7. Access the application at http://127.0.0.1:8000/
+
+
+# Development
+## Testing
+Run tests using:
+```bash
+python manage.py test
+```
+
+## Code Style
+- Follow PEP 8 guidelines for Python code.
+- Use black for code formatting.
+```bash
+pip install black
+black .
+```
+
+- Use flake8 for linting.
