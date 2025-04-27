@@ -1,0 +1,32 @@
+# Version control
+.git/
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Django
+*.sqlite3
+
+# Environment variables
+.env
+.env.example
+
+# Docker-related files
+.dockerignore
+docker-compose.yml
+nginx/
+
+# Development/IDE
+.vscode/
+.python-version
+
+# Documentation
+readme.md
+
+# Local static files
+huawei_prototype/staticfiles/
