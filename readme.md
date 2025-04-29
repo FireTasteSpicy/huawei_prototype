@@ -125,3 +125,41 @@ bash docker/scripts/test_clean_install.sh development
 # Test production environment
 bash docker/scripts/test_clean_install.sh production
 ```
+
+# Terraform
+## Prerequisites
+- Install Terraform on your system. You can do this by following the instructions on the [Terraform website](https://developer.hashicorp.com/terraform/install) or by using the following commands:
+``` bash
+# For Ubuntu/Debian-based systems
+wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+sudo apt update && sudo apt install terraform
+
+# Verify the installation
+terraform version
+```
+
+## Setup
+1. Initialize Terraform:
+```bash
+cd terraform
+terraform init
+```
+Validate the configuration:
+```bash
+terraform validate
+```
+2. Plan the deployment:
+```bash
+terraform plan
+```
+3. Apply the configuration:
+```bash
+terraform apply
+```
+
+## Destroy the infrastructure
+To destroy the infrastructure created by Terraform, run:
+```bash
+terraform destroy
+```

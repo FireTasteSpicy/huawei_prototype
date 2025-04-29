@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 'storages',  # Uncomment if using Huawei Cloud OBS for static files
     'dashboard',
     'geomap',
     'authentication',
@@ -87,13 +88,28 @@ WSGI_APPLICATION = 'huawei_prototype.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 
-# TODO: Update database configuration to use Huawei Cloud RDS and PostgreSQL
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+
+
+
+# Base database configuration to use Huawei Cloud RDS and PostgreSQL
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv('DB_NAME'),
+#         'USER': os.getenv('DB_USER', 'postgres'), # Default RDS username is often 'postgres' or 'root'
+#         'PASSWORD': os.getenv('DB_PASSWORD'),
+#         'HOST': os.getenv('DB_HOST'),
+#         'PORT': os.getenv('DB_PORT', '5432'),
+#     }
+# }
+
 
 
 # Password validation
@@ -132,10 +148,45 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-# TODO: Update static files configuration to use Huawei Cloud OBS
-
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+
+# Huawei Cloud OBS configuration for static files
+# OBS_STATIC_BUCKET_NAME = os.getenv('OBS_STATIC_BUCKET_NAME')
+# HUAWEI_REGION = os.getenv('HUAWEI_REGION', 'ap-southeast-3') # Default to your region
+
+# Use OBS for static files if configured and credentials are provided
+# STATICFILES_STORAGE = 'storages.backends.OBSboto3.OBSBoto3Storage'
+# HW_ACCESS_KEY_ID = os.getenv('HUAWEI_ACCESS_KEY')
+# HW_SECRET_ACCESS_KEY = os.getenv('HUAWEI_SECRET_ACCESS_KEY')
+# HW_STORAGE_BUCKET_NAME = OBS_STATIC_BUCKET_NAME
+# HW_OBS_ENDPOINT_URL = f'https://obs.{HUAWEI_REGION}.myhuaweicloud.com'
+# HW_OBS_REGION_NAME = HUAWEI_REGION
+# # Use the website endpoint for serving files if the bucket is configured for static website hosting
+# HW_OBS_CUSTOM_DOMAIN = f'{OBS_STATIC_BUCKET_NAME}.obs-website.{HUAWEI_REGION}.myhuaweicloud.com'
+# HW_OBS_OBJECT_PARAMETERS = {
+#     'CacheControl': 'max-age=86400', # Cache static files for 1 day
+# }
+# HW_DEFAULT_ACL = 'public-read' # Make static files publicly readable
+# HW_LOCATION = 'static' # Store static files in a 'static/' prefix in the bucket
+# STATIC_URL = f'https://{HW_OBS_CUSTOM_DOMAIN}/{HW_LOCATION}/'
+
+# REDIS_HOST = os.getenv('REDIS_HOST')
+# if REDIS_HOST and os.getenv('REDIS_PASSWORD'):
+#     CACHES = {
+#         "default": {
+#             "BACKEND": "django_redis.cache.RedisCache",
+#             "LOCATION": f"redis://:{os.getenv('REDIS_PASSWORD')}@{REDIS_HOST}:{os.getenv('REDIS_PORT', '6379')}/1",
+#             "OPTIONS": {
+#                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#                 # Add connection pool options if needed
+#                 # "CONNECTION_POOL_KWARGS": {"max_connections": 100}
+#             }
+#         }
+#     }
+
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
