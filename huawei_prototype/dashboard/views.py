@@ -11,9 +11,12 @@ def dashboard(request):
     since = timezone.now() - timedelta(hours=24)
 
     # Query incidents in the past 24 hours
+    # recent_incidents = Incident.objects.filter(timestamp__gte=since)
+    # total_incidents = recent_incidents.count()
+    # # total_infractions = recent_incidents.filter(incident_type__iexact='infraction').count()
+    # total_infractions = recent_probs.filter(accident_prob_score__lt=0.4).count()
     recent_incidents = Incident.objects.filter(timestamp__gte=since)
     total_incidents = recent_incidents.count()
-    total_infractions = recent_incidents.filter(incident_type__iexact='infraction').count()
 
     # Calculate average emergency response time for incidents in past 24h
     avg_response_time = None
@@ -30,6 +33,7 @@ def dashboard(request):
     moderate_risk_count = recent_probs.filter(accident_prob_score__gte=0.4, accident_prob_score__lt=0.7).count()
     high_risk_count = recent_probs.filter(accident_prob_score__gte=0.7).count()
 
+    total_infractions = low_risk_count
     # Count distinct areas (cameras) with moderate/high risk in past 24h
     moderate_risk_areas_count = recent_probs.filter(accident_prob_score__gte=0.4, accident_prob_score__lt=0.7) \
                                            .values('camera').distinct().count()

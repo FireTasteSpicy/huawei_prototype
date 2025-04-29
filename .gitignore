@@ -24,3 +24,11 @@ db.sqlite3
 
 # Django migrations
 # **/migrations/
+
+
+# OSMnx HTTP cache
+cache/
+# *.json
+
+# macOS Finder metadata
+.DS_Store
