@@ -2,6 +2,7 @@ from django.shortcuts import render
 import folium
 from dashboard.models import Incident, Camera
 import logging
+from django.contrib.auth.decorators import login_required
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -9,6 +10,7 @@ logger = logging.getLogger(__name__)
 # Singapore's coordinates
 SINGAPORE_CENTER = [1.3521, 103.8198]
 
+@login_required
 def incident_map(request):
     """View for displaying real-time incidents on a map."""
     # Create a map centered on Singapore

@@ -1,27 +1,34 @@
-from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from dashboard.models import *
-# Create your views here.
 
-# login view
 def login_view(request):
-    if request.method == "POST":
-        username = request.POST['username']
-        password = request.POST['password']
+    """Login view – uses Django's built-in authentication."""
+    if request.user.is_authenticated:
+        return redirect('dashboard')  # already logged in, go to dashboard
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('home')
+            # Redirect to next page if specified, otherwise dashboard
+            next_page = request.POST.get('next') or request.GET.get('next')
+            return redirect(next_page if next_page else 'dashboard')
         else:
-            # Return an 'invalid login' error message.
-            return render(request, 'login.html', {'error': 'Invalid credentials'})
-    return render(request, 'login.html')
+            # Invalid credentials, re-render login with error
+            return render(request, 'authentication/login.html', {
+                'error': 'Invalid username or password',
+                'next': request.GET.get('next', '')
+            })
+    else:
+        # GET request: render login form
+        return render(request, 'authentication/login.html', {
+            'next': request.GET.get('next', '')
+        })
 
-# logout view
 @login_required
-def custom_logout_view(request):
+def logout_view(request):
+    """Logout the user and redirect to login page."""
     logout(request)
     return redirect('login')
-
-

@@ -1,5 +1,117 @@
+{# dashboard/templates/dashboard/dashboard.html #}
 {% extends "base.html" %}
 
 {% block content %}
-    <p>Dashboard Placeholder</p>
+<div class="container">
+
+  {# Metrics Row #}
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="card text-white bg-primary h-100">
+        <div class="card-body">
+          <h5 class="card-title">Total Incidents<br><small class="text-light">past 24 h</small></h5>
+          <p class="display-4">{{ total_incidents }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-white bg-success h-100">
+        <div class="card-body">
+          <h5 class="card-title">Avg. Response Time<br><small class="text-light">minutes</small></h5>
+          <p class="display-4">
+            {% if average_response_time %}{{ average_response_time }}{% else %}&mdash;{% endif %}
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-white bg-warning h-100">
+        <div class="card-body">
+          <h5 class="card-title">Total Infractions<br><small class="text-light">past 24 h</small></h5>
+          <p class="display-4">{{ total_infractions }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# Risk Counts Row #}
+  <div class="row g-3 mb-5">
+    <div class="col-md-4">
+      <div class="card border-info h-100">
+        <div class="card-body">
+          <h6 class="card-subtitle mb-2 text-info">Low Risk</h6>
+          <p class="h2">{{ low_risk_count }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-warning h-100">
+        <div class="card-body">
+          <h6 class="card-subtitle mb-2 text-warning">Moderate Risk</h6>
+          <p class="h2">{{ moderate_risk_count }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-danger h-100">
+        <div class="card-body">
+          <h6 class="card-subtitle mb-2 text-danger">High Risk</h6>
+          <p class="h2">{{ high_risk_count }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# Notifications Table #}
+  <h2 class="mb-3">Recent Notifications (past 24 h)</h2>
+  <div class="card">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-striped mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th>#</th>
+              <th>Message</th>
+              <th>Category</th>
+              <th>When</th>
+              <th>Link</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for note in notifications %}
+            <tr class="{% if note.category == 'threshold_triggered' %}table-danger{% endif %}">
+              <td>{{ forloop.counter }}</td>
+              <td>{{ note.message }}</td>
+              <td>
+                {% if note.category == 'incident' %}
+                    <span class="badge bg-secondary">Incident</span>
+                {% elif note.category == 'threshold_triggered' %}
+                    <span class="badge bg-danger">Threshold</span>
+                {% elif note.category == 'alert' %}
+                    <span class="badge bg-warning text-dark">Alert</span>
+                {% elif note.category == 'message' %}
+                    <span class="badge bg-info text-dark">Message</span>
+                {% else %}
+                    <span class="badge bg-light text-dark">{{ note.category|title }}</span>
+                {% endif %}
+              </td>
+              <td>{{ note.timestamp|date:"Y-m-d H:i" }}</td>
+              <td>
+                <a href="{{ note.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                  View
+                </a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="5" class="text-center py-3">No notifications in the last 24 hours.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
 {% endblock %}

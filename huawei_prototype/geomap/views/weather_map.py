@@ -3,6 +3,7 @@ import folium
 import random
 import logging
 from dashboard.models import Weather, Camera
+from django.contrib.auth.decorators import login_required
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -10,6 +11,7 @@ logger = logging.getLogger(__name__)
 # Singapore's coordinates
 SINGAPORE_CENTER = [1.3521, 103.8198]
 
+@login_required
 def weather_map(request):
     """View for displaying weather information on a map."""
     # Create a map centered on Singapore

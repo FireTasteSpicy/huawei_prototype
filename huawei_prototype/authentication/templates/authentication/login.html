@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-4">
+    <h2 class="mb-4">Login</h2>
+
+    <form method="post"
+          action="{% url 'login' %}{% if next %}?next={{ next }}{% endif %}">
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label for="id_username" class="form-label">Username</label>
+        <input type="text" name="username" id="id_username"
+               class="form-control" required autofocus>
+      </div>
+
+      <div class="mb-3">
+        <label for="id_password" class="form-label">Password</label>
+        <input type="password" name="password" id="id_password"
+               class="form-control" required>
+      </div>
+
+      {% if next %}
+        <input type="hidden" name="next" value="{{ next }}">
+      {% endif %}
+
+      <div class="d-grid">
+        <button type="submit" class="btn btn-primary">Log in</button>
+      </div>
+
+      {% if error %}
+        <div class="alert alert-danger mt-3">{{ error }}</div>
+      {% endif %}
+    </form>
+
+    <p class="mt-3 text-muted">
+      Accounts are created by the admin. Please contact your administrator to obtain credentials.
+    </p>
+  </div>
+</div>
+{% endblock %}
