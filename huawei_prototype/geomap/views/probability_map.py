@@ -44,7 +44,8 @@ def probability_map(request):
             lat, lng = map(float, probability.camera.location.split(','))
             
             # Get accident probability score and determine risk level
-            score = probability.accident_probability_score
+            # score = probability.accident_probability_score
+            score = probability.accident_prob_score
             risk_level = get_risk_level(score)
             
             # Skip if filtered by risk level
@@ -56,8 +57,9 @@ def probability_map(request):
                 continue
                 
             # Add to heatmap data (lat, lng, intensity)
+            # heat_data.append([lat, lng, score])
             heat_data.append([lat, lng, score])
-            
+
             # Add marker based on risk level and filter
             show_marker = False
             marker_color = "blue"  # Default color
@@ -102,9 +104,12 @@ def probability_map(request):
                     fill_color=marker_color,
                     fill_opacity=0.7
                 ).add_to(map_sg)
+        # except Exception as e:
+        #     logger.error(f"Error processing probability {probability.accident_probability_score_id}: {e}")
+        #     continue
         except Exception as e:
-            logger.error(f"Error processing probability {probability.accident_probability_score_id}: {e}")
-            continue
+            # use the correct PK attribute name
+            logger.error(f"Error processing probability {probability.accident_prob_score_id}: {e}")
     
     # If no data is found, generate demo data
     if not heat_data:
