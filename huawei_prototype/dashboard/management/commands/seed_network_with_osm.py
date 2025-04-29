@@ -18,59 +18,64 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         now = timezone.now()
 
-        # 1) Define the expressways you want to sample by their OSM name
+        # 1) Define the expressways you want to sample by their OSM name and codes
         expressways = [
-            "Pan Island Expressway",
-            "East Coast Parkway",
-            "Central Expressway",
+            {"name": "Pan Island Expressway", "code": "PIE"},
+            {"name": "East Coast Parkway",  "code": "ECP"},
+            {"name": "Central Expressway",   "code": "CTE"},
+            {"name": "Ayer Rajah Expressway", "code": "AYE"},
+            {"name": "Tampines Expressway",   "code": "TPE"},
+            {"name": "Kallang-Paya Lebar Expressway", "code": "KPE"},
         ]
 
         # 2) Download Singapore’s drivable graph once
         self.stdout.write("Fetching Singapore road network…")
         G = ox.graph_from_place("Singapore", network_type="drive")
-        # Convert edges to GeoDataFrame
         edges = ox.graph_to_gdfs(G, nodes=False, edges=True)
 
         total_cams = total_scores = total_incidents = 0
 
-        for road_name in expressways:
-            self.stdout.write(f"Processing {road_name}…")
-            # Filter edges whose 'name' contains our road_name
+        for road in expressways:
+            name = road["name"]
+            code = road["code"]
+            self.stdout.write(f"Processing {name}…")
+
+            # Flexible, case-insensitive substring match on OSM name tag
             mask = edges["name"].apply(
-                lambda x: any(road_name == n for n in x) if isinstance(x, list)
-                else (road_name == x)
+                lambda x: (
+                    any(name.lower() in n.lower() for n in x) if isinstance(x, list)
+                    else (isinstance(x, str) and name.lower() in x.lower())
+                )
             )
             selected = edges[mask]
             if selected.empty:
-                self.stdout.write(self.style.WARNING(f"No OSM edges found for {road_name}."))
+                self.stdout.write(self.style.WARNING(f"No OSM edges found for {name}."))
                 continue
 
             # Merge into a single MultiLineString
             road_geom = unary_union(selected.geometry.values)
-            length = road_geom.length  # in meters (approx.)
+            length = road_geom.length  # meters
 
-            # 3) Choose how many cameras you want along it
+            # Place N cameras along the real geometry
             N = 20
             distances = np.linspace(0, length, N)
 
-            for idx, dist in enumerate(distances):
-                # interpolate point along the line
+            for idx, dist in enumerate(distances, start=1):
                 point = road_geom.interpolate(dist)
-                lng, lat = point.x, point.y  # shapely gives x=lon, y=lat
-                cam_name = f"{road_name.split()[0][:3].upper()}-{idx+1:02d}"
+                lng, lat = point.x, point.y
+                cam_name = f"{code}-{idx:02d}"
 
-                # Create or get camera
                 cam, created = Camera.objects.get_or_create(
                     camera_name=cam_name,
                     defaults={
                         "location": f"{lat:.6f},{lng:.6f}",
-                        "road_name": road_name,
+                        "road_name": name,
                         "feed_url": f"https://example.com/feed/{cam_name.lower()}.mp4"
                     }
                 )
                 total_cams += 1
 
-                # Seed one weather reading
+                # Seed weather
                 Weather.objects.create(
                     camera=cam,
                     temperature=round(random.uniform(25.0, 33.0), 1),
@@ -81,7 +86,7 @@ class Command(BaseCommand):
                     timestamp=now - timedelta(minutes=random.randint(1, 60))
                 )
 
-                # Seed one probability score
+                # Seed probability score
                 score = random.uniform(0.2, 0.95)
                 AccidentProbabilityScore.objects.create(
                     camera=cam,
@@ -91,7 +96,7 @@ class Command(BaseCommand):
                 )
                 total_scores += 1
 
-                # Seed 0–2 incidents + response times
+                # Seed incidents + response times
                 for _ in range(random.randint(0, 2)):
                     itype, severity = random.choice([
                         ("Traffic Infraction", "low"),
@@ -113,6 +118,6 @@ class Command(BaseCommand):
                     total_incidents += 1
 
         self.stdout.write(self.style.SUCCESS(
-            f"Seed complete: {total_cams} cameras, "
-            f"{total_scores} scores, {total_incidents} incidents."
+            f"Seed complete: {total_cams} cameras, {total_scores} scores, {total_incidents} incidents."
         ))
+
