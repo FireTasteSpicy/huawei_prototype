@@ -4,10 +4,12 @@ from dashboard.models import Notification, User
 from datetime import datetime, timedelta
 import logging
 import random
+from django.contrib.auth.decorators import login_required
 
 # Configure logging
 logger = logging.getLogger(__name__)
 
+@login_required
 def notifications(request):
     """View for displaying and managing user notifications."""
     

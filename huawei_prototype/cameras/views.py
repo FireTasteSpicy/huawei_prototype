@@ -5,11 +5,12 @@ from django.db.models import Q
 import logging
 import random
 from datetime import datetime, timedelta
+from django.contrib.auth.decorators import login_required
 
 # Configure logging
 logger = logging.getLogger(__name__)
 
-
+@login_required
 def cameras(request):
     """View for displaying and searching cameras."""
     
@@ -156,7 +157,7 @@ def cameras(request):
     )
 
 # Keep your existing cameras function
-
+@login_required
 def camera_feed(request, camera_id):
     """View for displaying details of a specific camera."""
     

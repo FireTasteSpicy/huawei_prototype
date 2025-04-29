@@ -4,13 +4,14 @@ from folium.plugins import HeatMap
 import random
 import logging
 from dashboard.models import AccidentProbabilityScore, Camera
-
+from django.contrib.auth.decorators import login_required
 # Configure logging
 logger = logging.getLogger(__name__)
 
 # Singapore's coordinates
 SINGAPORE_CENTER = [1.3521, 103.8198]
 
+@login_required
 def probability_map(request):
     """View for displaying accident probability scores and risk levels from the database."""
     # Create a map centered on Singapore

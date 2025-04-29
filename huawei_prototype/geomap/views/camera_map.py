@@ -2,6 +2,7 @@ from dashboard.models import Camera
 from django.shortcuts import render
 import folium
 import logging
+from django.contrib.auth.decorators import login_required
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -9,6 +10,7 @@ logger = logging.getLogger(__name__)
 # Singapore's coordinates
 SINGAPORE_CENTER = [1.3521, 103.8198]
 
+@login_required
 def camera_map(request):
     """View for displaying camera locations on a map."""
     # Create a map centered on Singapore
