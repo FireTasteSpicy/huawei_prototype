@@ -58,34 +58,93 @@ def camera_feed(request, camera_id):
 
 @login_required
 def camera_stream(request, camera_id):
-    """MJPEG stream: reads frames, runs YOLO on each, yields JPEGs."""
     camera = get_object_or_404(Camera, camera_id=camera_id)
     if not camera.feed_url or camera.feed_url.startswith('http'):
-        return HttpResponseNotFound("No local video available.")
-    path = camera.feed_url.lstrip('/')
-    cap = cv2.VideoCapture(os.path.join(settings.BASE_DIR, path))
+        return HttpResponseNotFound("No local video.")
+    cap = cv2.VideoCapture(os.path.join(settings.BASE_DIR, camera.feed_url.lstrip('/')))
     if not cap.isOpened():
         return HttpResponseNotFound("Cannot open video.")
 
-    seen = set()
+    # Define how each class maps to severity
+    severity_map = {
+        "Multiple collision": "high",
+        "Vehicle fire":       "high",
+        "Vehicular accident": "medium",
+        "Reckless driving":   "medium",
+        "Tailgating":         "medium",
+        "Self-accident":      "medium",
+    }
+
+    # Ranking for selecting the "worst" class in an event
+    severity_ranking = [
+        "Multiple collision",
+        "Vehicle fire",
+        "Vehicular accident",
+        "Reckless driving",
+        "Tailgating",
+        "Self-accident",
+    ]
+
+    in_event = False
+    event_buffer = set()
+    no_det_count = 0
+    no_det_threshold = 5
+
     def gen():
+        nonlocal in_event, event_buffer, no_det_count
+
         while True:
             ret, frame = cap.read()
             if not ret:
                 break
+
             res = model(frame)[0]
-            img = res.plot()  # annotated frame
-            # log each new class once
-            for c in getattr(res.boxes, 'cls', []):
-                name = res.names[int(c)]
-                if name not in seen:
-                    seen.add(name)
-                    Incident.objects.create(incident_type=name, camera=camera)
-            _, jpg = cv2.imencode('.jpg', img)
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' +
-                   jpg.tobytes() + b'\r\n')
+            img = res.plot()
+
+            frame_classes = [res.names[int(c)] for c in getattr(res.boxes, "cls", [])]
+
+            if frame_classes:
+                if not in_event:
+                    in_event = True
+                    event_buffer.clear()
+                    no_det_count = 0
+                event_buffer.update(frame_classes)
+                no_det_count = 0
+            else:
+                if in_event:
+                    no_det_count += 1
+                    if no_det_count >= no_det_threshold:
+                        # Event ended → choose highest‐severity class
+                        chosen = min(event_buffer, key=lambda x: severity_ranking.index(x))
+                        sev = severity_map.get(chosen, "medium")
+                        Incident.objects.create(
+                            incident_type=chosen,
+                            severity=sev,
+                            camera=camera
+                        )
+                        in_event = False
+                        event_buffer.clear()
+                        no_det_count = 0
+
+            success, jpeg = cv2.imencode('.jpg', img)
+            if success:
+                yield (b'--frame\r\n'
+                       b'Content-Type: image/jpeg\r\n\r\n' +
+                       jpeg.tobytes() +
+                       b'\r\n')
+
+        # Flush any open event at end of video
+        if in_event and event_buffer:
+            chosen = min(event_buffer, key=lambda x: severity_ranking.index(x))
+            sev = severity_map.get(chosen, "medium")
+            Incident.objects.create(
+                incident_type=chosen,
+                severity=sev,
+                camera=camera
+            )
         cap.release()
 
-    return StreamingHttpResponse(gen(),
-        content_type='multipart/x-mixed-replace; boundary=frame')
+    return StreamingHttpResponse(
+        gen(),
+        content_type='multipart/x-mixed-replace; boundary=frame'
+    )
