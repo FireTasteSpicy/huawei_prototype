@@ -13,17 +13,17 @@
             <div class="row mt-3">
                 <div class="col-md-8">
                     <!-- Video feed display -->
-                    <div style="background-color: #d3d3d3; height: 350px; display: flex; align-items: center; justify-content: center;">
+                    <div style="background:#eee;height:350px;display:flex;align-items:center;justify-content:center;">
                         {% if camera.feed_url %}
-                        <video id="cameraFeed" style="width: 100%; height: 100%; object-fit: contain;" autoplay>
-                            <source src="{{ camera.feed_url }}" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
+                        <img src="{% url 'camera_stream' camera.camera_id %}"
+                            style="width:100%;height:100%;object-fit:contain;"
+                            alt="Live annotated stream"/>
                         {% else %}
-                        <h3 class="text-secondary">Video</h3>
+                        <h3 class="text-secondary">No Video Feed</h3>
                         {% endif %}
                     </div>
-                    
+
+
                     <!-- Camera details below video -->
                     <div class="card mt-3">
                         <div class="card-body text-center">
