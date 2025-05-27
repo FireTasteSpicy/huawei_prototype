@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'archive',
     'cameras',
     'notifications',
+    'django_plotly_dash',
 ]
 
 MIDDLEWARE = [
@@ -56,7 +57,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
+X_FRAME_OPTIONS = 'SAMEORIGIN'
 ROOT_URLCONF = 'huawei_prototype.urls'
 
 TEMPLATES = [

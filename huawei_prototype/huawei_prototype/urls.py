@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
+import django_plotly_dash.urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,4 +30,5 @@ urlpatterns = [
     path('cameras/', include('cameras.urls')),
     path('accounts/', include('authentication.urls')),
     path('notifications/', include('notifications.urls')),
+    path('django_plotly_dash/', include('django_plotly_dash.urls')),
 ]

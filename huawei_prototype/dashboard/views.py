@@ -3,6 +3,8 @@ from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth.decorators import login_required
 from dashboard.models import *
+from django.views.generic import TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 @login_required
 def dashboard(request):
@@ -113,3 +115,6 @@ def dashboard(request):
         "notifications": notifications
     }
     return render(request, "dashboard/dashboard.html", context)
+
+class DashboardView(LoginRequiredMixin, TemplateView):
+    template_name = 'dashboard/dashboard.html'
